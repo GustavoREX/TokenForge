@@ -1,37 +1,37 @@
 # TokenForge
 
-Neste programa, Você pode criar tokens de imagens, com ou sem bordas, possibilitando tambem a adição de boras perssonalisadas diretamente na pasta
+Neste programa, VocÃª pode criar tokens de imagens, com ou sem bordas, possibilitando tambem a adiÃ§Ã£o de boras perssonalisadas diretamente na pasta
 
-Contando com uma ferramenta simples de remoção de fundo de imagem, você tambem pode criar tokens de imagens sem fundo.
-Tenha caltela, ja que a ferramente é simples e funciona melgor em imagens da qual os detalhes de fundo e a personagem retratada são bem distintos
+Contando com uma ferramenta simples de remoÃ§Ã£o de fundo de imagem, vocÃª tambem pode criar tokens de imagens sem fundo.
+Tenha caltela, ja que a ferramente Ã© simples e funciona melgor em imagens da qual os detalhes de fundo e a personagem retratada sÃ£o bem distintos
 funionando muito melhor em imagens de fundo em cor solida bem distinta da personagem
 
-O programa é simples mas faz o que promete sem muita complicação, basta selecionar a imagem, escolher o tipo de token que deseja criar e clicar em salvar
+O programa Ã© simples mas faz o que promete sem muita complicaÃ§Ã£o, basta selecionar a imagem, escolher o tipo de token que deseja criar e clicar em salvar
 
 
-Esse codigo é a base crua, ou seja, é nescessario a compilação se quiser que ele funcione com um .EXE
+Esse codigo Ã© a base crua, ou seja, Ã© nescessario a compilaÃ§Ã£o se quiser que ele funcione com um .EXE
 
-Para aqueles que querem o .EXE, rode esse comando de compilação (é possivel que você tenha que baixar algumas bibliotecas Python para isso)
+Para aqueles que querem o .EXE, rode esse comando de compilaÃ§Ã£o (Ã© possivel que vocÃª tenha que baixar algumas bibliotecas Python para isso)
 
 python -m PyInstaller --noconfirm --windowed --onedir --name TokenForge --icon token.ico --add-data "borders;borders" 
 --collect-all rembg --collect-all onnxruntime --collect-all pymatting --copy-metadata pymatting --copy-metadata rembg 
 --copy-metadata onnxruntime TokenForge.py
 
-vou deixar os comandos para instalação das bibliotecas necessárias aqui, caso queira rodar o código sem compilar, ou queira compilar por conta própria
+vou deixar os comandos para instalaÃ§Ã£o das bibliotecas necessÃ¡rias aqui, caso queira rodar o cÃ³digo sem compilar, ou queira compilar por conta prÃ³pria
 
 
-Blibliotecas basicas de interface grafica e manipulação de imagens
+Blibliotecas basicas de interface grafica e manipulaÃ§Ã£o de imagens
 pip install pillow ttkbootstrap tkinterdnd2
 
-Rembg (a ferramente que permite a remoção da BackGround das imagens)
+Rembg (a ferramente que permite a remoÃ§Ã£o da BackGround das imagens)
 pip install rembg
-onnxruntime (basicamente um pacote de dados para a Rembg rodar local, ela é uma IA simples para remover o fundo das imagens então presisa do onnxruntime para rodar localmente)
+onnxruntime (basicamente um pacote de dados para a Rembg rodar local, ela Ã© uma IA simples para remover o fundo das imagens entÃ£o presisa do onnxruntime para rodar localmente)
 pip install rembg onnxruntime
 
-Pyistaller (que é para rodar o compilador)
+Pyistaller (que Ã© para rodar o compilador)
 
 pip install pyinstaller
 
-talvez você encontre algumas outras bibliotecas que podem estar faltando, mas é so procurar como instar elas, o que geralmente vai ser algo como
+talvez vocÃª encontre algumas outras bibliotecas que podem estar faltando, mas Ã© so procurar como instar elas, o que geralmente vai ser algo como
 pip install nome-da-biblioteca
 
