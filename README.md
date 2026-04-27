@@ -3,7 +3,7 @@
 Neste programa, Você pode criar tokens de imagens, com ou sem bordas, possibilitando tambem a adição de boras perssonalisadas diretamente na pasta
 
 <ins>{estou modificando o programa para a adição de algumas features de edição de imagem, então estou migrando para uma base mais modular. no então estou mantendo o antigo codigo ainda presente no .old.py}</ins>
-
+<ins>{ja esta com um editor de imagem simples que atualmente apenas permite a remoção por IA do fundo da imagem, mais features de edição serão adicionadas mais tarde}</ins>
 Contando com uma ferramenta simples de remoção de fundo de imagem, você tambem pode criar tokens de imagens sem fundo.
 Tenha caltela, ja que a ferramente é simples e funciona melgor em imagens da qual os detalhes de fundo e a personagem retratada são bem distintos
 funionando muito melhor em imagens de fundo em cor solida bem distinta da personagem

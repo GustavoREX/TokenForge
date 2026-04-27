@@ -1,18 +1,19 @@
-﻿import os
+﻿from ast import Lambda
+import os
 import sys
 import math
 import tkinter as tk
 from tkinter import filedialog, colorchooser
-from PIL import Image, ImageTk, ImageOps, ImageDraw
 from rembg import remove
 import ttkbootstrap as tb
 from ttkbootstrap.constants import *
+from core.shared import *
 
-try:
-    from tkinterdnd2 import DND_FILES, TkinterDnD
-    DND_OK = True
-except Exception:
-    DND_OK = False
+#try:
+#    from tkinterdnd2 import DND_FILES, TkinterDnD
+#    DND_OK = True
+#except Exception:
+#    DND_OK = False
 
 APP_TITLE = 'TokenForge'
 def resource_path(relative):
@@ -28,12 +29,13 @@ EXPORT_SIZE = 512
 class TokenMode(tb.Frame):
     def __init__(self, master):
         super().__init__(master)
-        self.style = tb.Style('flatly')
+
 
         self.source_img = None
         self.current_path = None
         self.border_img = None
-        self.preview_tk = None
+        #self.preview_tk = None
+
         self.bg_mode = tk.StringVar(value='transparent')
         self.bg_color = '#ffffff'
         self.size_var = tk.IntVar(value=512)
@@ -52,10 +54,15 @@ class TokenMode(tb.Frame):
         top = tb.Frame(self, padding=10)
         top.pack(fill=X)
 
-        tb.Button(top, text='Selecionar Imagem', bootstyle=PRIMARY, command=self.open_image).pack(side=LEFT, padx=4)
+        #tb.Button(top, text='Selecionar Imagem', bootstyle=PRIMARY, command=self.open_image).pack(side=LEFT, padx=4)
+        #tb.Button(top, text='Salvar Token', bootstyle=SUCCESS, command=self.save_token).pack(side=LEFT, padx=4)
+        #tb.Button(top, text='Escolher Cor Fundo', bootstyle=INFO, command=self.pick_color).pack(side=LEFT, padx=4)
+        #tb.Button(top, text='Auto Remove Fundo', bootstyle=WARNING, command=self.auto_remove_bg).pack(side=LEFT, padx=4)
+
+        tb.Button(top, text='Selecionar Imagem', bootstyle=PRIMARY, command=lambda: open_image(self)).pack(side=LEFT, padx=4)
         tb.Button(top, text='Salvar Token', bootstyle=SUCCESS, command=self.save_token).pack(side=LEFT, padx=4)
-        tb.Button(top, text='Escolher Cor Fundo', bootstyle=INFO, command=self.pick_color).pack(side=LEFT, padx=4)
-        tb.Button(top, text='Auto Remove Fundo', bootstyle=WARNING, command=self.auto_remove_bg).pack(side=LEFT, padx=4)
+        tb.Button(top, text='Escolher Cor Fundo', bootstyle=INFO, command=lambda: pick_color(self)).pack(side=LEFT, padx=4)
+        tb.Button(top, text='Auto Remove Fundo', bootstyle=WARNING, command=lambda: auto_remove_bg(self)).pack(side=LEFT, padx=4)
 
         body = tb.Frame(self, padding=10)
         body.pack(fill=BOTH, expand=True)
@@ -69,7 +76,10 @@ class TokenMode(tb.Frame):
         self.canvas.bind('<B1-Motion>', self.do_drag)
         self.canvas.bind('<ButtonRelease-1>', self.stop_drag)
         self.canvas.pack(fill=BOTH, expand=True)
-        self.canvas.create_text(160, 160, text='Arraste uma imagem aqui\nou clique em Selecionar', font=('Segoe UI', 14), fill='#666')
+
+        enable_dragdrop(self.canvas, lambda e: on_drop(self, e))
+
+        self.canvas.create_text(400, 300, text='Arraste uma imagem aqui\no  u clique em Selecionar', font=('Segoe UI', 14), fill='#666')
 
         right = tb.Labelframe(body, text='Opções', padding=10)
         right.pack(side=RIGHT, fill=Y)
@@ -95,12 +105,6 @@ class TokenMode(tb.Frame):
         tb.Label(right, text='Tamanho exportação').pack(anchor=W, pady=(10,0))
         tb.Spinbox(right, from_=128, to=2048, increment=64, textvariable=self.size_var, width=10, command=self.refresh_preview).pack(anchor=W)
 
-        if DND_OK:
-            try:
-                self.drop_target_register(DND_FILES)
-                self.dnd_bind('<<Drop>>', self.on_drop)
-            except Exception:
-                pass
 
     def load_borders(self):
         os.makedirs(USER_BORDER_DIR, exist_ok=True)
@@ -115,20 +119,6 @@ class TokenMode(tb.Frame):
         self.border_combo['values'] = files
         self.border_combo.current(0)
 
-    def open_image(self):
-        path = filedialog.askopenfilename(filetypes=[('Images','*.png;*.jpg;*.jpeg;*.webp')])
-        if path:
-            self.load_image(path)
-
-    def on_drop(self, event):
-        path = event.data.strip().strip('{').strip('}')
-        if os.path.isfile(path):
-            self.load_image(path)
-
-    def load_image(self, path):
-        self.current_path = path
-        self.source_img = Image.open(path).convert('RGBA')
-        self.refresh_preview()
 
     def apply_border(self):
         choice = self.border_choice.get()
@@ -142,17 +132,6 @@ class TokenMode(tb.Frame):
                     break
         self.refresh_preview()
 
-    def auto_remove_bg(self):
-        if not self.source_img:
-            return
-        self.source_img = remove(self.source_img)
-        self.refresh_preview()
-
-    def pick_color(self):
-        c = colorchooser.askcolor()[1]
-        if c:
-            self.bg_color = c
-            self.refresh_preview()
 
     def make_token(self, size):
         img = self.source_img.copy()
@@ -217,19 +196,11 @@ class TokenMode(tb.Frame):
     def stop_drag(self, event):
         self.drag_start = None
 
+
     def save_token(self):
         if not self.source_img:
             return
         size = self.size_var.get()
         img = self.make_token(size)
-        base = 'token'
-        initialdir = os.path.abspath('.')
-        if self.current_path:
-            base = os.path.splitext(os.path.basename(self.current_path))[0] + '_token'
-            initialdir = os.path.dirname(self.current_path)
-        path = filedialog.asksaveasfilename(initialfile=base + '.png', initialdir=initialdir, defaultextension='.png', filetypes=[('PNG','*.png')])
-        if path:
-            img.save(path)
+        save_image(self, img, 1)
 
-if __name__ == '__main__':
-    app = TokenForge()

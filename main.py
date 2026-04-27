@@ -1,12 +1,15 @@
 ﻿import tkinter as tk
+from tkinterdnd2 import TkinterDnD
 import ttkbootstrap as tb
 from ttkbootstrap.constants import *
 from modes.token_mode import TokenMode
 from modes.editor_mode import EditorMode
 
-class App(tb.Window):
+class App(TkinterDnD.Tk):
     def __init__(self):
-        super().__init__(themename='flatly')
+        super().__init__()
+        tb.Style('flatly')
+
         self.title('TokenForge Studio')
         self.geometry('1180x760')
         self.minsize(1000, 700)
