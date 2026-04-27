@@ -1,6 +1,8 @@
-# TokenForge
+﻿# TokenForge
 
 Neste programa, Você pode criar tokens de imagens, com ou sem bordas, possibilitando tambem a adição de boras perssonalisadas diretamente na pasta
+
+<ins>{estau modificando o programa para a adição de algumas features de edição de imagem, então estou migrando para uma base mais modular. no então estou mantendo o antigo codigo ainda presente no .old.py}</ins>
 
 Contando com uma ferramenta simples de remoção de fundo de imagem, você tambem pode criar tokens de imagens sem fundo.
 Tenha caltela, ja que a ferramente é simples e funciona melgor em imagens da qual os detalhes de fundo e a personagem retratada são bem distintos
@@ -13,24 +15,26 @@ Esse codigo é a base crua, ou seja, é nescessario a compilação se quiser que
 
 Para aqueles que querem o .EXE, rode esse comando de compilação (é possivel que você tenha que baixar algumas bibliotecas Python para isso)
 
-python -m PyInstaller --noconfirm --windowed --onedir --name TokenForge --icon token.ico --add-data "borders;borders" 
---collect-all rembg --collect-all onnxruntime --collect-all pymatting --copy-metadata pymatting --copy-metadata rembg 
---copy-metadata onnxruntime TokenForge.py
+ <kbd>python -m PyInstaller --noconfirm --windowed --onedir --name TokenForge --icon token.ico --add-data "borders;borders" --collect-all rembg --collect-all onnxruntime --collect-all pymatting --copy-metadata pymatting --copy-metadata rembg --copy-metadata onnxruntime TokenForge.py </kbd>
 
 vou deixar os comandos para instalação das bibliotecas necessárias aqui, caso queira rodar o código sem compilar, ou queira compilar por conta própria
 
 
 Blibliotecas basicas de interface grafica e manipulação de imagens
-pip install pillow ttkbootstrap tkinterdnd2
+
+ <kbd>pip install pillow ttkbootstrap tkinterdnd2 </kbd>
 
 Rembg (a ferramente que permite a remoção da BackGround das imagens)
-pip install rembg
+
+ <kbd>pip install rembg </kbd>
+
 onnxruntime (basicamente um pacote de dados para a Rembg rodar local, ela é uma IA simples para remover o fundo das imagens então presisa do onnxruntime para rodar localmente)
-pip install rembg onnxruntime
+
+ <kbd>pip install rembg onnxruntime </kbd>
 
 Pyistaller (que é para rodar o compilador)
 
-pip install pyinstaller
+ <kbd>pip install pyinstaller </kbd>
 
 talvez você encontre algumas outras bibliotecas que podem estar faltando, mas é so procurar como instar elas, o que geralmente vai ser algo como
 pip install nome-da-biblioteca
