@@ -1,54 +1,72 @@
 ﻿# TokenForge
 
-Neste programa, Você pode criar tokens de imagens, com ou sem bordas, possibilitando tambem a adição de boras perssonalisadas diretamente na pasta
+Neste programa, você pode criar tokens a partir de imagens, com ou sem bordas, possibilitando também a adição de bordas personalizadas diretamente na pasta.
+
+
 
 ## Atualizações
 
+<ins>{Estou modificando o programa para adicionar algumas features de edição de imagem, então estou migrando para uma base mais modular. No entanto, ainda estou mantendo o código antigo presente no arquivo .old.py}</ins>
 
-<ins>{estou modificando o programa para a adição de algumas features de edição de imagem, então estou migrando para uma base mais modular. no então estou mantendo o antigo codigo ainda presente no .old.py}</ins>
+<ins>{Já existe um editor de imagem simples, que atualmente permite apenas a remoção de fundo por IA. Mais features de edição serão adicionadas futuramente}</ins>
 
-<ins>{ja esta com um editor de imagem simples que atualmente apenas permite a remoção por IA do fundo da imagem, mais features de edição serão adicionadas mais tarde}</ins>
+*** Arquivos de "QUICK START" adicionados para facilitar o uso durante o período de desenvolvimento ***
 
-*** Adicionado arquivos de "QUICK START" para facilitar o uso ainda em periodo de desenvolvimento ***
-> para utilizar o programa sem um ambiente, apenas rode o start.bat, ele vai instalar as bibliotecas necessárias e rodar o programa, caso queira rodar o programa sem o .bat, basta seguir as instruções de instalação das bibliotecas mais abaixo
+> Para utilizar o programa sem configurar um ambiente manualmente, basta executar o `start.bat`. Ele irá instalar as bibliotecas necessárias e rodar o programa. Caso queira executar sem o `.bat`, siga as instruções de instalação mais abaixo.
 
-> é nessessario ter o Python 3 instalado para rodar o programa e conseguir baixar as dependencias pelo pip.
+> É necessário ter o Python 3 instalado para rodar o programa e baixar as dependências via pip.
+
+
 
 ## Descrição
 
-Contando com uma ferramenta simples de remoção de fundo de imagem, você tambem pode criar tokens de imagens sem fundo.
-Tenha caltela, ja que a ferramente é simples e funciona melgor em imagens da qual os detalhes de fundo e a personagem retratada são bem distintos
-funionando muito melhor em imagens de fundo em cor solida bem distinta da personagem
+Contando com uma ferramenta simples de remoção de fundo, você também pode criar tokens de imagens já sem fundo.
 
-O programa é simples mas faz o que promete sem muita complicação, basta selecionar a imagem, escolher o tipo de token que deseja criar e clicar em salvar
+Tenha cautela, pois a ferramenta é simples e funciona melhor em imagens nas quais o fundo e o personagem retratado sejam bem distintos.
 
-### Bibliotecas extras e adendos para rodar o programa
+Ela apresenta melhores resultados em imagens com fundo de cor sólida e bem diferente do personagem.
 
-Esse codigo é a base crua, ou seja, é nescessario a compilação se quiser que ele funcione com um .EXE
-
-Para aqueles que querem o .EXE, rode esse comando de compilação (é possivel que você tenha que baixar algumas bibliotecas Python para isso)
-
- <kbd>python -m PyInstaller --noconfirm --windowed --onedir --name TokenForge --icon token.ico --add-data "borders;borders" --collect-all rembg --collect-all onnxruntime --collect-all pymatting --copy-metadata pymatting --copy-metadata rembg --copy-metadata onnxruntime TokenForge.py </kbd>
-
-vou deixar os comandos para instalação das bibliotecas necessárias aqui, caso queira rodar o código sem compilar, ou queira compilar por conta própria
+O programa é simples, mas faz o que promete sem muita complicação: basta selecionar a imagem, escolher o tipo de token que deseja criar e clicar em salvar.
 
 
-Blibliotecas basicas de interface grafica e manipulação de imagens
 
- <kbd>pip install pillow ttkbootstrap tkinterdnd2 </kbd>
+## Bibliotecas extras e observações para rodar o programa
 
-Rembg (a ferramente que permite a remoção da BackGround das imagens)
+Este código é a base crua do projeto, ou seja, é necessária a compilação caso queira utilizá-lo como `.EXE`.
 
- <kbd>pip install rembg </kbd>
+Para aqueles que querem o `.EXE`, rode o comando abaixo (é possível que você precise instalar algumas bibliotecas Python antes):
 
-onnxruntime (basicamente um pacote de dados para a Rembg rodar local, ela é uma IA simples para remover o fundo das imagens então presisa do onnxruntime para rodar localmente)
+<kbd>python -m PyInstaller --noconfirm --windowed --onedir --name TokenForge --icon token.ico --add-data "borders;borders" --collect-all rembg --collect-all onnxruntime --collect-all pymatting --copy-metadata pymatting --copy-metadata rembg --copy-metadata onnxruntime TokenForge.py</kbd>
 
- <kbd>pip install rembg onnxruntime </kbd>
+Vou deixar também os comandos para instalação das bibliotecas necessárias abaixo, caso queira rodar o código sem compilar ou compilar por conta própria.
 
-Pyistaller (que é para rodar o compilador)
 
- <kbd>pip install pyinstaller </kbd>
 
-talvez você encontre algumas outras bibliotecas que podem estar faltando, mas é so procurar como instar elas, o que geralmente vai ser algo como
-pip install nome-da-biblioteca
+### Bibliotecas básicas de interface gráfica e manipulação de imagens
 
+<kbd>pip install pillow ttkbootstrap tkinterdnd2</kbd>
+
+
+### Rembg
+
+(A ferramenta que permite a remoção do background das imagens)
+
+<kbd>pip install rembg</kbd>
+
+
+### onnxruntime
+
+(Basicamente um pacote necessário para o Rembg rodar localmente. Como ele utiliza uma IA simples para remover fundos, precisa do onnxruntime para funcionar.)
+
+<kbd>pip install rembg onnxruntime</kbd>
+
+
+### PyInstaller
+
+(Usado para compilação do programa)
+
+<kbd>pip install pyinstaller</kbd>
+
+Talvez você encontre algumas outras bibliotecas faltando, mas geralmente basta procurar como instalá-las. Normalmente será algo como:
+
+<kbd>pip install nome-da-biblioteca</kbd>
