@@ -79,7 +79,7 @@ class TokenMode(tb.Frame):
 
         enable_dragdrop(self.canvas, lambda e: on_drop(self, e))
 
-        self.canvas.create_text(400, 300, text='Arraste uma imagem aqui\no  u clique em Selecionar', font=('Segoe UI', 14), fill='#666')
+        self.canvas.create_text(400, 300, text='Arraste uma imagem aqui\n   ou clique em Selecionar', font=('Segoe UI', 14), fill='#666')
 
         right = tb.Labelframe(body, text='Opções', padding=10)
         right.pack(side=RIGHT, fill=Y)

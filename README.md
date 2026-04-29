@@ -2,14 +2,27 @@
 
 Neste programa, Você pode criar tokens de imagens, com ou sem bordas, possibilitando tambem a adição de boras perssonalisadas diretamente na pasta
 
+## Atualizações
+
+
 <ins>{estou modificando o programa para a adição de algumas features de edição de imagem, então estou migrando para uma base mais modular. no então estou mantendo o antigo codigo ainda presente no .old.py}</ins>
+
 <ins>{ja esta com um editor de imagem simples que atualmente apenas permite a remoção por IA do fundo da imagem, mais features de edição serão adicionadas mais tarde}</ins>
+
+*** Adicionado arquivos de "QUICK START" para facilitar o uso ainda em periodo de desenvolvimento ***
+> para utilizar o programa sem um ambiente, apenas rode o start.bat, ele vai instalar as bibliotecas necessárias e rodar o programa, caso queira rodar o programa sem o .bat, basta seguir as instruções de instalação das bibliotecas mais abaixo
+
+> é nessessario ter o Python 3 instalado para rodar o programa e conseguir baixar as dependencias pelo pip.
+
+## Descrição
+
 Contando com uma ferramenta simples de remoção de fundo de imagem, você tambem pode criar tokens de imagens sem fundo.
 Tenha caltela, ja que a ferramente é simples e funciona melgor em imagens da qual os detalhes de fundo e a personagem retratada são bem distintos
 funionando muito melhor em imagens de fundo em cor solida bem distinta da personagem
 
 O programa é simples mas faz o que promete sem muita complicação, basta selecionar a imagem, escolher o tipo de token que deseja criar e clicar em salvar
 
+### Bibliotecas extras e adendos para rodar o programa
 
 Esse codigo é a base crua, ou seja, é nescessario a compilação se quiser que ele funcione com um .EXE
 
