@@ -1,72 +1,85 @@
-﻿# TokenForge
+# TokenForge Studio — revisão
 
-Neste programa, você pode criar tokens a partir de imagens, com ou sem bordas, possibilitando também a adição de bordas personalizadas diretamente na pasta.
+Aplicativo Windows para criar tokens quadrados em PNG, com transparência, recorte circular e composição avançada de borda.
 
+## Usar
 
+Abra `dist\TokenForge.exe`. O Python não é necessário para executar o aplicativo compilado. A remoção de fundo usa o modelo U2Net; se não estiver no cache local, o rembg fará o download na primeira utilização. As ferramentas de composição não dependem desse download.
 
-## Atualizações
+Para rodar pelos fontes, use `start.bat`. Para instalar as dependências em um ambiente virtual local, execute `setup.bat` uma vez.
 
-<ins>{Estou modificando o programa para adicionar algumas features de edição de imagem, então estou migrando para uma base mais modular. No entanto, ainda estou mantendo o código antigo presente no arquivo .old.py}</ins>
+## Criar um token com efeito de saída da borda
 
-<ins>{Já existe um editor de imagem simples, que atualmente permite apenas a remoção de fundo por IA. Mais features de edição serão adicionadas futuramente}</ins>
+1. Importe a imagem. PNG com fundo transparente facilita o efeito; o botão **Remover fundo IA** também está disponível.
+2. Na aba **Borda**, escolha uma das bordas ou importe um PNG/WebP. Ajuste o tamanho do anel para deixar espaço ao redor.
+3. Ative **Modo avançado · 6 camadas**. A imagem passa a usar enquadramento livre, sem corte circular, e as abas de camadas ficam disponíveis.
+4. Na aba **Camadas**, use **Ocultar pelo início** e **Ocultar pelo fim** para cada uma das quatro fatias. Os controles vão de 0 a 90 graus. A soma não pode ultrapassar 90 graus.
+5. Desmarque **Mostrar fatia sobre a imagem** para ocultar a fatia inteira. **Mostrar todas** restaura os quatro intervalos completos; **Ocultar todas** coloca a imagem acima de toda a borda inferior.
+6. Arraste a imagem na prévia para posicioná-la. A roda do mouse ajusta seu zoom. **Ajustar**, **Preencher** e **Centralizar imagem** estão na aba **Imagem**.
+7. Na aba **Exportar**, escolha o lado do quadrado em pixels e exporte o PNG.
 
-*** Arquivos de "QUICK START" adicionados para facilitar o uso durante o período de desenvolvimento ***
+Ordem fixa, de baixo para cima:
 
-> Para utilizar o programa sem configurar um ambiente manualmente, basta executar o `start.bat`. Ele irá instalar as bibliotecas necessárias e rodar o programa. Caso queira executar sem o `.bat`, siga as instruções de instalação mais abaixo.
+- Borda completa.
+- Imagem importada, com o enquadramento e o recorte escolhidos.
+- Fatia 1: superior direita.
+- Fatia 2: inferior direita.
+- Fatia 3: inferior esquerda.
+- Fatia 4: superior esquerda.
 
-> É necessário ter o Python 3 instalado para rodar o programa e baixar as dependências via pip.
+Os nomes dos quadrantes correspondem à rotação zero. A divisão pode ser girada de 0 a 90 graus; os números das guias acompanham essa rotação. Os ângulos são medidos no sentido horário a partir do topo. O fundo sólido, quando ativado, é o preenchimento da tela sob toda a composição.
 
+As fatias usam máscaras não destrutivas da mesma borda e mantêm o centro e a escala da borda inferior. O PNG final é achatado; não é um arquivo de projeto com camadas reeditáveis.
 
+## Recorte e exportação
 
-## Descrição
+- A prévia mostra o quadrado realmente exportado. Guias e xadrez são apenas auxiliares visuais.
+- O token sempre é exportado com largura e altura iguais, entre 64 e 4096 pixels.
+- Borda e recorte permanecem centralizados. A imagem pode ser deslocada de propósito; **Centralizar imagem** zera o deslocamento.
+- **Ignorar margens transparentes** usa o conteúdo visível da imagem para ajustar o enquadramento.
+- O modo simples usa recorte circular por padrão. No modo avançado, o padrão é quadrado livre, permitindo detalhes fora do anel; o recorte circular continua disponível.
+- O editor de imagem também exporta quadrado por padrão. Desmarque **Exportar quadrado** para preservar o formato retangular da imagem. Seu campo numérico define o lado maior da saída.
+- O overlay do editor mantém a mesma posição proporcional na prévia e na exportação.
 
-Contando com uma ferramenta simples de remoção de fundo, você também pode criar tokens de imagens já sem fundo.
+## Bordas personalizadas
 
-Tenha cautela, pois a ferramenta é simples e funciona melhor em imagens nas quais o fundo e o personagem retratado sejam bem distintos.
+As 320 bordas originais estão incluídas. É possível adicionar arquivos em `borders` ao lado do executável ou em `%LOCALAPPDATA%\TokenForge\borders`, e usar **Atualizar biblioteca**. Arquivos do diretório do usuário têm preferência sobre bordas de mesmo nome distribuídas com o programa. O botão de importação também abre bordas diretamente de outras pastas, sem copiá-las.
 
-Ela apresenta melhores resultados em imagens com fundo de cor sólida e bem diferente do personagem.
+## Compilar
 
-O programa é simples, mas faz o que promete sem muita complicação: basta selecionar a imagem, escolher o tipo de token que deseja criar e clicar em salvar.
+```bat
+setup.bat
+build_tokenforge.bat
+```
 
+Saída: `dist\TokenForge.exe`, arquivo único, com ícone e bordas incorporadas. O modelo de IA não é incorporado ao EXE; permanece no cache do rembg.
 
+Para reconstruir limpando o cache de compilação:
 
-## Bibliotecas extras e observações para rodar o programa
+```bat
+build_tokenforge.bat clean
+```
 
-Este código é a base crua do projeto, ou seja, é necessária a compilação caso queira utilizá-lo como `.EXE`.
+O script seleciona `.venv\Scripts\python.exe` quando disponível, ou `python` do PATH. Verifica dependências e sintaxe, usa caminhos relativos à própria pasta, interrompe em caso de erro e retorna um código de saída. A compilação incremental é o padrão.
 
-Para aqueles que querem o `.EXE`, rode o comando abaixo (é possível que você precise instalar algumas bibliotecas Python antes):
+Ambiente verificado: Windows, Python 3.14.7, PyInstaller 6.22.3. As dependências diretas testadas estão em `requirements.txt`; isso não é um lock completo das dependências transitivas.
 
-<kbd>python -m PyInstaller --noconfirm --windowed --onedir --name TokenForge --icon token.ico --add-data "borders;borders" --collect-all rembg --collect-all onnxruntime --collect-all pymatting --copy-metadata pymatting --copy-metadata rembg --copy-metadata onnxruntime TokenForge.py</kbd>
+## Testes
 
-Vou deixar também os comandos para instalação das bibliotecas necessárias abaixo, caso queira rodar o código sem compilar ou compilar por conta própria.
+```bat
+python -m unittest discover -s tests -v
+```
 
+Teste de inicialização do executável compilado, sem abrir a interface de trabalho:
 
+```bat
+dist\TokenForge.exe --self-test diagnostico.json
+```
 
-### Bibliotecas básicas de interface gráfica e manipulação de imagens
+Ele verifica a criação da interface, as bordas incorporadas, a composição e a importação dos módulos de IA. Não baixa modelos nem faz inferência.
 
-<kbd>pip install pillow ttkbootstrap tkinterdnd2</kbd>
+## Adotar esta revisão
 
+A pasta original `D:\AccessALL\Codding\TokenForge` não foi alterada: ela estava fora das áreas permitidas para gravação na sessão. Esta entrega é uma cópia independente.
 
-### Rembg
-
-(A ferramenta que permite a remoção do background das imagens)
-
-<kbd>pip install rembg</kbd>
-
-
-### onnxruntime
-
-(Basicamente um pacote necessário para o Rembg rodar localmente. Como ele utiliza uma IA simples para remover fundos, precisa do onnxruntime para funcionar.)
-
-<kbd>pip install rembg onnxruntime</kbd>
-
-
-### PyInstaller
-
-(Usado para compilação do programa)
-
-<kbd>pip install pyinstaller</kbd>
-
-Talvez você encontre algumas outras bibliotecas faltando, mas geralmente basta procurar como instalá-las. Normalmente será algo como:
-
-<kbd>pip install nome-da-biblioteca</kbd>
+Faça um backup antes de substituir os fontes. Copie os arquivos da raiz e as pastas `core`, `modes` e `tests`; as bordas podem ser mescladas com sua biblioteca. Preserve seu `.git` e não substitua seu ambiente virtual por arquivos de outra máquina. `Tokenforge.old.py` é um arquivo histórico do projeto original e não é usado nem distribuído pelo aplicativo revisado.

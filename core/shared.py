@@ -1,86 +1,125 @@
-﻿import os
+"""Image I/O and asynchronous background removal shared by both modes."""
+from pathlib import Path
+import queue
+import threading
 from tkinter import filedialog, colorchooser, messagebox
-from rembg import remove
 from PIL import Image
-import traceback
-from PIL import Image, ImageTk, ImageOps, ImageDraw
+from core.rendering import read_image
 
-try:
-    from tkinterdnd2 import DND_FILES
-    DND_OK = True
-except:
-    DND_OK = False
+_ai_lock = threading.Lock()
+_ai_session = None
 
 
 def enable_dragdrop(widget, callback):
-    if not DND_OK:
-        return
-
     try:
+        from tkinterdnd2 import DND_FILES
         widget.drop_target_register(DND_FILES)
-        widget.dnd_bind("<<Drop>>", callback)
-    except Exception:
-        messagebox.showerror("DnD Error", traceback.format_exc())
+        widget.dnd_bind('<<Drop>>', callback)
+    except (AttributeError, RuntimeError):
+        pass
 
 
 def open_image(obj):
-    path = filedialog.askopenfilename(
-        filetypes=[("Images", "*.png;*.jpg;*.jpeg;*.webp")]
-    )
+    path = filedialog.askopenfilename(parent=obj, filetypes=[('Imagens', '*.png *.jpg *.jpeg *.webp *.bmp')])
     if path:
         load_image(obj, path)
 
 
-def on_drop(obj, event):
-    try:
-        path = obj.tk.splitlist(event.data)[0]
-        if os.path.isfile(path):
-            load_image(obj, path)
-    except Exception:
-        messagebox.showerror("Drop Error", traceback.format_exc())
-
-
 def load_image(obj, path):
-    obj.current_path = path
-    obj.source_img = Image.open(path).convert("RGBA")
+    try:
+        image = read_image(path)
+    except (OSError, ValueError, Image.DecompressionBombError) as error:
+        messagebox.showerror('Não foi possível abrir', str(error), parent=obj)
+        return
+    obj.current_path = str(path)
+    obj.source_img = image
+    obj.original_img = image.copy()
+    obj.image_revision += 1
+    obj.on_image_loaded()
+    obj.set_status(f'{Path(path).name} · {image.width} × {image.height} px')
     obj.refresh_preview()
 
 
+def on_drop(obj, event):
+    paths = obj.tk.splitlist(event.data)
+    if paths:
+        load_image(obj, paths[0])
+
+
 def auto_remove_bg(obj):
-    if getattr(obj, "source_img", None):
-        obj.source_img = remove(obj.source_img)
+    if obj.source_img is None or obj.ai_busy:
+        return
+    obj.ai_busy = True
+    obj.ai_button.configure(state='disabled')
+    obj.set_status('Removendo fundo… Na primeira vez, o modelo pode ser baixado.')
+    source = obj.source_img.copy()
+    revision = obj.image_revision
+    results = queue.Queue()
+
+    def work():
+        global _ai_session
+        try:
+            from rembg import remove, new_session
+            with _ai_lock:
+                if _ai_session is None:
+                    _ai_session = new_session('u2net')
+                result = remove(source, session=_ai_session).convert('RGBA')
+            results.put((result, None))
+        except Exception as error:
+            results.put((None, str(error)))
+
+    def poll():
+        if not obj.winfo_exists():
+            return
+        try:
+            image, error = results.get_nowait()
+        except queue.Empty:
+            obj.after(100, poll)
+            return
+        obj.ai_busy = False
+        obj.ai_button.configure(state='normal')
+        if error:
+            obj.set_status('Não foi possível remover o fundo.')
+            messagebox.showerror('Remoção de fundo', error, parent=obj)
+        elif obj.image_revision == revision:
+            obj.source_img = image
+            obj.image_revision += 1
+            obj.refresh_preview()
+            obj.set_status('Fundo removido. A imagem original pode ser restaurada.')
+        else:
+            obj.set_status('Resultado descartado: outra imagem foi carregada ou restaurada.')
+
+    threading.Thread(target=work, daemon=True).start()
+    obj.after(100, poll)
+
+
+def restore_image(obj):
+    if obj.original_img is not None:
+        obj.source_img = obj.original_img.copy()
+        obj.image_revision += 1
         obj.refresh_preview()
+        obj.set_status('Imagem original restaurada.')
 
 
 def pick_color(obj):
-    c = colorchooser.askcolor()[1]
-    if c:
-        obj.bg_color = c
+    color = colorchooser.askcolor(color=obj.bg_color, parent=obj)[1]
+    if color:
+        obj.bg_color = color
+        obj.bg_mode.set('solid')
         obj.refresh_preview()
 
 
-def save_image(obj, img, mode_id=1):
-    base = "image"
-    initialdir = os.path.abspath(".")
-
-    if getattr(obj, "current_path", None):
-        name = os.path.splitext(
-            os.path.basename(obj.current_path)
-        )[0]
-
-    if mode_id == 1:
-        base = name + "_token"
-    else:
-        base = name + "_edited"
-
-    initialdir = os.path.dirname(obj.current_path)
-
-    path = filedialog.asksaveasfilename(
-        initialfile=base + ".png",
-        initialdir=initialdir,
-        defaultextension=".png",
-        filetypes=[("PNG", "*.png")]
-    )
-
+def save_image(obj, image, mode_id=1):
+    if image is None:
+        return
+    source = Path(obj.current_path) if obj.current_path else None
+    name = (source.stem if source else 'image') + ('_token' if mode_id == 1 else '_edited')
+    path = filedialog.asksaveasfilename(parent=obj, initialfile=name + '.png',
+        initialdir=str(source.parent) if source else str(Path.home()),
+        defaultextension='.png', filetypes=[('PNG transparente', '*.png')])
     if path:
-        img.save(path)
+        try:
+            image.save(path, format='PNG')
+            obj.set_status(f'Salvo: {Path(path).name} · {image.width} × {image.height} px')
+        except OSError as error:
+            messagebox.showerror('Erro ao salvar', str(error), parent=obj)
