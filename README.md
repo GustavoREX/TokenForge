@@ -59,27 +59,3 @@ Para reconstruir limpando o cache de compilação:
 ```bat
 build_tokenforge.bat clean
 ```
-
-O script seleciona `.venv\Scripts\python.exe` quando disponível, ou `python` do PATH. Verifica dependências e sintaxe, usa caminhos relativos à própria pasta, interrompe em caso de erro e retorna um código de saída. A compilação incremental é o padrão.
-
-Ambiente verificado: Windows, Python 3.14.7, PyInstaller 6.22.3. As dependências diretas testadas estão em `requirements.txt`; isso não é um lock completo das dependências transitivas.
-
-## Testes
-
-```bat
-python -m unittest discover -s tests -v
-```
-
-Teste de inicialização do executável compilado, sem abrir a interface de trabalho:
-
-```bat
-dist\TokenForge.exe --self-test diagnostico.json
-```
-
-Ele verifica a criação da interface, as bordas incorporadas, a composição e a importação dos módulos de IA. Não baixa modelos nem faz inferência.
-
-## Adotar esta revisão
-
-A pasta original `D:\AccessALL\Codding\TokenForge` não foi alterada: ela estava fora das áreas permitidas para gravação na sessão. Esta entrega é uma cópia independente.
-
-Faça um backup antes de substituir os fontes. Copie os arquivos da raiz e as pastas `core`, `modes` e `tests`; as bordas podem ser mescladas com sua biblioteca. Preserve seu `.git` e não substitua seu ambiente virtual por arquivos de outra máquina. `Tokenforge.old.py` é um arquivo histórico do projeto original e não é usado nem distribuído pelo aplicativo revisado.
